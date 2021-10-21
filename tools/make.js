@@ -1,4 +1,4 @@
-import { querySPARQL } from "./querySPARQL.mjs";
+import { querySPARQL } from "./querySPARQL.js";
 
 const ESTAT = "https://data.e-stat.go.jp/lod/sparql/alldata/query";
 

@@ -1,11 +1,13 @@
-import lgcodemap from "./lgcodemap.mjs";
+import { LG_CODE } from "./LG_CODE.js";
+
+let prefs = null;
 
 const fromLGCode = (code) => {
   let ncode = parseInt(code);
   if (isNaN(ncode) || !ncode) return null;
   const res = [];
   for (;;) {
-    const l = lgcodemap[ncode];
+    const l = LG_CODE[ncode];
     if (!l) return null;
     res.unshift(l[1]);
     ncode = l[0];
@@ -18,7 +20,7 @@ let lgrevmap = null; // [code, name]
 
 const queryMap = (cityname) => {
   if (!lgrevmap) {
-    lgrevmap = makeReverseMap(lgcodemap);
+    lgrevmap = makeReverseMap(LG_CODE);
   }
   let res = lgrevmap[cityname];
   if (res) return res;
@@ -40,9 +42,13 @@ const getLGCodeFrom2 = (cityname1, cityname2) => {
   const pcode = parseInt(l2[0][0]);
   const l3 = l.filter((a) => {
     if (a[1] == pcode) return true;
-    return lgcodemap[a[1]][0] == pcode;
+    return LG_CODE[a[1]][0] == pcode;
   });
   return makeCodeResult(l3);
+};
+
+const findLGCode = (cityname1) => {
+  return makeCodeResult(queryMap(cityname1));
 };
 
 const getLGCode = (cityname1, cityname2 = null, cityname3 = null) => {
@@ -50,7 +56,24 @@ const getLGCode = (cityname1, cityname2 = null, cityname3 = null) => {
     return null;
   }
   if (!cityname2) { // 1 param
-    return makeCodeResult(queryMap(cityname1));
+    //return makeCodeResult(queryMap(cityname1));
+    if (!prefs) {
+      prefs = getPrefs();
+    }
+    for (let i = 0; i < prefs.length; i++) {
+      const pref = prefs[i];
+      if (cityname1.startsWith(pref)) {
+        if (cityname1 == pref) {
+          return addCheckDigit(i + 1);
+        }
+        cityname2 = cityname1.substring(pref.length);
+        cityname1 = pref;
+        break;
+      }
+    }
+    if (!cityname2) {
+      return null;
+    }
   }
   if (!cityname3) { // 2 params
     if (cityname2.endsWith("区")) { // 都道府県の代わりに市を使う
@@ -76,37 +99,13 @@ const getLGCode = (cityname1, cityname2 = null, cityname3 = null) => {
 
 const makeReverseMap = (map) => {
   const res = {};
-  for (const code in lgcodemap) {
-    const [parent, name] = lgcodemap[code];
+  for (const code in LG_CODE) {
+    const [parent, name] = LG_CODE[code];
     let a = res[name];
     if (!a) {
       a = res[name] = [];
     }
     a.push([parseInt(code), parent]);
-  }
-  return res;
-};
-
-const queryCode = (nameorcode) => {
-  let code = parseInt(nameorcode);
-  if (isNaN(code)) {
-    code = getLGCode(nameorcode);
-    if (!code || Array.isArray(code)) return null;
-  }
-  return [...lgcodemap[code], code];
-};
-
-const getCityChildrenWithDistrict = (nameorcode) => {
-  const l = queryCode(nameorcode);
-  if (!l) return null;
-  const code = l[2];
-  const res = [];
-  for (const c in lgcodemap) {
-    const d = lgcodemap[c];
-    if (d[0] == code) {
-      const name = d[1];
-      res.push([parseInt(c), name]);
-    }
   }
   return res;
 };
@@ -126,16 +125,41 @@ const getCityChildren = (nameorcode) => {
   return res;
 };
 
+const queryCode = (nameorcode) => {
+  let code = parseInt(nameorcode);
+  if (isNaN(code)) {
+    //code = getLGCode(nameorcode);
+    code = makeCodeResult(queryMap(nameorcode));
+    if (!code || Array.isArray(code)) return null;
+  }
+  return [...LG_CODE[code], code];
+};
+
+const getCityChildrenWithDistrict = (nameorcode) => {
+  const l = queryCode(nameorcode);
+  if (!l) return null;
+  const code = l[2];
+  const res = [];
+  for (const c in LG_CODE) {
+    const d = LG_CODE[c];
+    if (d[0] == code) {
+      const name = d[1];
+      res.push([parseInt(c), name]);
+    }
+  }
+  return res;
+};
+
 const getCityParent = (nameorcode) => {
   const l = queryCode(nameorcode);
   if (!l) return null;
-  return [l[0], lgcodemap[l[0]][1]];
+  return [l[0], LG_CODE[l[0]][1]];
 };
 
 const searchCities = (name) => {
   const res = [];
-  for (const n in lgcodemap) {
-    const city = lgcodemap[n];
+  for (const n in LG_CODE) {
+    const city = LG_CODE[n];
     const cityname = city[1];
     if (cityname.indexOf(name) >= 0) {
       res.push([n, cityname]);
@@ -144,7 +168,22 @@ const searchCities = (name) => {
   return res;
 };
 
+const getPrefs = () => {
+  const prefs = [];
+  for (const lg in LG_CODE) {
+    if (lg > 0 && lg % 1000 == 0) {
+      //console.log(lg, LG_CODE[lg]);
+      prefs.push(LG_CODE[lg][1]);
+    }
+  }
+  return prefs;
+};
+
 if (import.meta.main) {
+  //lgrevmap = makeReverseMap(LG_CODE);
+  //console.log(lgrevmap);
+  //console.log(LG_CODE.filter(l => l[1] == 0))
+  //console.log(LG_CODE["0"]);
   console.log(getCityParent("全国"));
   console.log(getLGCode("鯖江市"));
   console.log(getLGCode("全国"));
@@ -167,6 +206,7 @@ if (import.meta.main) {
   // console.log(getLGCode("札幌市")); // 1100, 1000
 }
 
+/*
 export {
   getLGCode,
   fromLGCode,
@@ -175,3 +215,68 @@ export {
   getCityParent,
   searchCities,
 };
+*/
+
+const addCheckDigit = (code) => {
+  if (!code) {
+    return code;
+  }
+  if (Array.isArray(code)) {
+    return code.map(c => addCheckDigit(c));
+  }
+  const tcode = typeof code;
+  if (tcode == "number") {
+    code = code.toString();
+  } else if (tcode != "string") {
+    throw new Error("not LGcode");
+  }
+  if (code.length == 1) {
+    code = "0" + code + "000";
+  } else if (code.length == 2) {
+    code = code + "000";
+  } else if (code.length < 5) {
+    code = ("0000" + code).substring(code.length + 4 - 5);
+  } else if (code.length == 6) {
+    const res = addCheckDigit(code.substring(0, 5));
+    if (res != code) {
+      throw new Error("not LGcode");
+    }
+    return code;
+  }
+  if (code.length != 5) {
+    throw new Error("not LGcode");
+  }
+	let sum = 0;
+  for (let i = 0; i < code.length; i++) {
+    const n = parseInt(code[i]);
+    sum += n * (6 - i);
+	}
+	const chk = (11 - sum % 11) % 10;
+	return code + chk;
+};
+
+const removeCheckDigit = (code) => {
+  const tcode = typeof code;
+  if (tcode != "string" || code.length != 6) {
+    throw new Error("not LGcode");
+  }
+  addCheckDigit(code);
+  return parseInt(code.substring(0, 5));
+};
+
+class LGCode {
+  static normalize(code) {
+    return addCheckDigit(code);
+  }
+  static decode(code) {
+    return fromLGCode(removeCheckDigit(code));
+  }
+  static encode(s1, s2, s3) {
+    return addCheckDigit(getLGCode(s1, s2, s3));
+  }
+  static find(s) {
+    return addCheckDigit(findLGCode(s));
+  }
+}
+
+export { LGCode };
