@@ -35,3 +35,6 @@ Deno.test("normalize", () => {
   t.assertEquals(LGCode.normalize(18), "180009");
   t.assertEquals(LGCode.decode("180009"), ["福井県"]);
 });
+Deno.test("parse", () => {
+  t.assertEquals(LGCode.parse("182079"), 18207);
+});

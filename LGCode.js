@@ -268,6 +268,9 @@ class LGCode {
   static normalize(code) {
     return addCheckDigit(code);
   }
+  static parse(code) {
+    return removeCheckDigit(code);
+  }
   static decode(code) {
     return fromLGCode(removeCheckDigit(code));
   }
