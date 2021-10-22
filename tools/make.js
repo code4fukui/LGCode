@@ -1,4 +1,5 @@
 import { querySPARQL } from "./querySPARQL.js";
+import { CSV } from "https://js.sabae.cc/CSV.js";
 
 const ESTAT = "https://data.e-stat.go.jp/lod/sparql/alldata/query";
 
@@ -101,6 +102,22 @@ select * {
 全国、都道府県の上位コードとなっていてほしい
 http://data.e-stat.go.jp/lod/page/sac/allArea
 
+->
+ic:日本語名が通らなくなってた！
+
+表記 -> <http://www.w3.org/2000/01/rdf-schema#label>
+上位コード -> <http://purl.org/dc/terms/isPartOf>
+
+PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+select ?lgcode ?label ?parent {
+  ?id a sacs:StandardAreaCode;
+    <http://www.w3.org/2000/01/rdf-schema#label> ?label;
+    dcterms:identifier ?lgcode.
+  filter not exists { ?id dcterms:valid ?valid. }
+  filter not exists { ?id <http://purl.org/dc/terms/isPartOf> ?parent. }
+}
 */
 
 const queryCities = async function (fn) {
@@ -110,14 +127,14 @@ const queryCities = async function (fn) {
     ESTAT,
     `PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
     PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX ic: <http://imi.go.jp/ns/core/rdf#>
 
     select ?lgcode ?label ?parent {
       ?id a sacs:StandardAreaCode;
-        ic:表記 ?label;
+        <http://www.w3.org/2000/01/rdf-schema#label> ?label;
         dcterms:identifier ?lgcode.
       filter not exists { ?id dcterms:valid ?valid. }
-      filter not exists { ?id ic:上位コード ?parent. }
+      filter not exists { ?id <http://purl.org/dc/terms/isPartOf> ?parent. }
+      filter(lang(?label) = "ja")
     }
   `,
   )).results.bindings;
@@ -129,22 +146,28 @@ const queryCities = async function (fn) {
     ESTAT,
     `PREFIX sacs: <http://data.e-stat.go.jp/lod/terms/sacs#>
     PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX ic: <http://imi.go.jp/ns/core/rdf#>
 
     select ?lgcode ?label ?parentcode {
       ?id a sacs:StandardAreaCode;
-        ic:表記 ?label;
-        ic:上位コード ?parent;
+        <http://www.w3.org/2000/01/rdf-schema#label> ?label;
+        <http://purl.org/dc/terms/isPartOf> ?parent;
         dcterms:identifier ?lgcode.
       ?parent dcterms:identifier ?parentcode.
       filter not exists { ?id dcterms:valid ?valid. }
       filter not exists { ?parent dcterms:valid ?valid. }
+      filter(lang(?label) = "ja")
     }
   `,
   )).results.bindings;
 
   labels.push(cities);
-
+  
+  /*
+  try {
+    Deno.remove("temp", { recursive: true });
+  } catch (e) {
+  }
+  */
   try {
     Deno.mkdirSync("temp");
   } catch (e) {
@@ -272,8 +295,19 @@ https://ja.wikipedia.org/wiki/%E6%B3%8A%E6%9D%91_(%E6%9B%96%E6%98%A7%E3%81%95%E5
 [ [ 0, "北海道" ], [ 1000, "根室振興局" ], "1696" ]
 */
 
-const makeMJS = function (name, json) {
-  return `const ${name} = ${JSON.stringify(json)}\nexport default ${name};\n`;
+const makeJS = function (name, json) {
+  return `export const ${name} = ${JSON.stringify(json)}\n`;
 };
 
-Deno.writeTextFileSync("../lgcodemap.mjs", makeMJS("lgcode", map));
+const makeList = (json) => {
+  return Object.keys(json).map(key => {
+    return {
+      lgcode: key,
+      name_ja: json[key][1],
+      parent: json[key][0],
+    }
+  });
+};
+
+Deno.writeTextFileSync("../LG_CODE.js", makeJS("LG_CODE", map));
+Deno.writeTextFileSync("../LG_CODE.csv", CSV.stringify(makeList(map)));
