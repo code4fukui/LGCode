@@ -219,7 +219,7 @@ export {
 
 const addCheckDigit = (code) => {
   if (!code) {
-    return code;
+    return null;
   }
   if (Array.isArray(code)) {
     return code.map(c => addCheckDigit(c));
@@ -228,7 +228,7 @@ const addCheckDigit = (code) => {
   if (tcode == "number") {
     code = code.toString();
   } else if (tcode != "string") {
-    throw new Error("not LGcode");
+    return null; // throw new Error("not LGcode");
   }
   if (code.length == 1) {
     code = "0" + code + "000";
@@ -239,12 +239,12 @@ const addCheckDigit = (code) => {
   } else if (code.length == 6) {
     const res = addCheckDigit(code.substring(0, 5));
     if (res != code) {
-      throw new Error("not LGcode");
+      return null; // throw new Error("not LGcode");
     }
     return code;
   }
   if (code.length != 5) {
-    throw new Error("not LGcode");
+    return null; // throw new Error("not LGcode");
   }
 	let sum = 0;
   for (let i = 0; i < code.length; i++) {
@@ -258,7 +258,7 @@ const addCheckDigit = (code) => {
 const removeCheckDigit = (code) => {
   const tcode = typeof code;
   if (tcode != "string" || code.length != 6) {
-    throw new Error("not LGcode");
+    return null; // throw new Error("not LGcode");
   }
   addCheckDigit(code);
   return parseInt(code.substring(0, 5));

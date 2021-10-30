@@ -38,3 +38,6 @@ Deno.test("normalize", () => {
 Deno.test("parse", () => {
   t.assertEquals(LGCode.parse("182079"), 18207);
 });
+Deno.test("parse err", () => {
+  t.assertEquals(LGCode.parse("18207"), null);
+});
