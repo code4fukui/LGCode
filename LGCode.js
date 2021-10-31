@@ -1,4 +1,5 @@
 import { LG_CODE } from "./LG_CODE.js";
+import { ArrayUtil } from "https://js.sabae.cc/ArrayUtil.js";
 
 let prefs = null;
 
@@ -86,7 +87,7 @@ const getLGCode = (cityname1, cityname2 = null, cityname3 = null) => {
     }
     if (cityname2.endsWith("町") || cityname2.endsWith("村")) { // 郡は無視
       const n = cityname2.indexOf("郡");
-      if (n > 0) {
+      if (n > 0 && n < cityname2.length - 2) { // 兵庫県上郡町 対策
         const town = cityname2.substring(n + 1);
         return getLGCodeFrom2(cityname1, town);
       }
@@ -118,7 +119,7 @@ const getCityChildren = (nameorcode) => {
   if (!code) return null;
   const res = [];
   code.forEach((c) => {
-    if (c[1].endsWith("郡") || c[1] == "特別区部") {
+    if (c[1].endsWith("郡") || c[1].endsWith("振興局") || c[1] == "特別区部") {
       const district = getCityChildrenWithDistrict(c[0]);
       district.forEach((d) => res.push(d));
     } else {
@@ -288,7 +289,12 @@ class LGCode {
   }
   static getCities(pref) {
     //return getCityChildren(pref)?.sort((a, b) => a[0] - b[0]).map(p => p[1]);
-    return getCityChildren(pref)?.map(p => p[1]);
+    const res = getCityChildren(pref)?.map(p => p[1]);
+    // 泊村、重複は1つにする
+    if (!ArrayUtil.isUnique(res)) {
+      return ArrayUtil.toUnique(res);
+    }
+    return res;
   }
 }
 

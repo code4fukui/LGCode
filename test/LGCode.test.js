@@ -55,3 +55,8 @@ Deno.test("getCities", () => {
   t.assertEquals(LGCode.getCities("東京都").length, 57);
   t.assertEquals(LGCode.getCities("東京都")[0], "千代田区");
 });
+Deno.test("泊村問題", () => {
+  // [ "014036", "016969" ]
+  t.assertEquals(LGCode.decode("014036"), ["北海道", "後志総合振興局", "泊村"]);
+  t.assertEquals(LGCode.decode("016969"), ["北海道", "根室振興局", "泊村"]); // 法律上のみ存在する村 https://ja.wikipedia.org/wiki/%E6%B3%8A%E6%9D%91_(%E5%8C%97%E6%B5%B7%E9%81%93%E6%A0%B9%E5%AE%A4%E6%8C%AF%E8%88%88%E5%B1%80)
+});
