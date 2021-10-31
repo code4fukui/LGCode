@@ -34,10 +34,17 @@ Deno.test("normalize", () => {
   t.assertEquals(LGCode.decode("010006"), ["北海道"]);
   t.assertEquals(LGCode.normalize(18), "180009");
   t.assertEquals(LGCode.decode("180009"), ["福井県"]);
+  t.assertEquals(LGCode.normalize(131041), "131041");
+  t.assertEquals(LGCode.normalize(13104), "131041");
 });
 Deno.test("parse", () => {
   t.assertEquals(LGCode.parse("182079"), 18207);
+  t.assertEquals(LGCode.parse("131041"), 13104);
 });
 Deno.test("parse err", () => {
   t.assertEquals(LGCode.parse("18207"), null);
+});
+Deno.test("getPrefs", () => {
+  t.assertEquals(LGCode.getPrefs().length, 47);
+  t.assertEquals(LGCode.getPrefs()[0], "北海道");
 });

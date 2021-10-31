@@ -280,6 +280,9 @@ class LGCode {
   static find(s) {
     return addCheckDigit(findLGCode(s));
   }
+  static getPrefs() {
+    return getPrefs();
+  }
 }
 
 export { LGCode };
