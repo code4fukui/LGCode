@@ -118,7 +118,7 @@ const getCityChildren = (nameorcode) => {
   if (!code) return null;
   const res = [];
   code.forEach((c) => {
-    if (c[1].endsWith("郡")) {
+    if (c[1].endsWith("郡") || c[1] == "特別区部") {
       const district = getCityChildrenWithDistrict(c[0]);
       district.forEach((d) => res.push(d));
     } else {
@@ -287,6 +287,7 @@ class LGCode {
     return getPrefs();
   }
   static getCities(pref) {
+    //return getCityChildren(pref)?.sort((a, b) => a[0] - b[0]).map(p => p[1]);
     return getCityChildren(pref)?.map(p => p[1]);
   }
 }

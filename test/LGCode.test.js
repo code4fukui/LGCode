@@ -52,4 +52,6 @@ Deno.test("getCities", () => {
   //t.assertEquals(LGCode.getCities("福井県"), 17);
   t.assertEquals(LGCode.getCities("福井県").length, 17);
   t.assertEquals(LGCode.getCities("福井県")[0], "福井市");
+  t.assertEquals(LGCode.getCities("東京都").length, 57);
+  t.assertEquals(LGCode.getCities("東京都")[0], "千代田区");
 });
