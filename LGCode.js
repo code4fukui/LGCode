@@ -111,6 +111,9 @@ const makeReverseMap = (map) => {
 };
 
 const getCityChildren = (nameorcode) => {
+  if (!nameorcode) {
+    return null;
+  }
   const code = getCityChildrenWithDistrict(nameorcode);
   if (!code) return null;
   const res = [];
@@ -282,6 +285,9 @@ class LGCode {
   }
   static getPrefs() {
     return getPrefs();
+  }
+  static getCities(pref) {
+    return getCityChildren(pref)?.map(p => p[1]);
   }
 }
 

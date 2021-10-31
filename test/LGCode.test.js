@@ -48,3 +48,8 @@ Deno.test("getPrefs", () => {
   t.assertEquals(LGCode.getPrefs().length, 47);
   t.assertEquals(LGCode.getPrefs()[0], "北海道");
 });
+Deno.test("getCities", () => {
+  //t.assertEquals(LGCode.getCities("福井県"), 17);
+  t.assertEquals(LGCode.getCities("福井県").length, 17);
+  t.assertEquals(LGCode.getCities("福井県")[0], "福井市");
+});
