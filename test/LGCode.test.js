@@ -12,6 +12,7 @@ Deno.test("decode", () => {
   t.assertEquals(LGCode.encode("福井県高浜町"), "184811");
   t.assertEquals(LGCode.encode("福井県大飯郡高浜町"), "184811"); // 群はあってもいい
   t.assertEquals(LGCode.encode("福井県"), "180009");
+  t.assertEquals(LGCode.encode("東京都"), "130001");
 });
 Deno.test("encode", () => {
   t.assertEquals(LGCode.decode("473561"), ["沖縄県", "島尻郡", "渡名喜村"]);
@@ -59,4 +60,13 @@ Deno.test("泊村問題", () => {
   // [ "014036", "016969" ]
   t.assertEquals(LGCode.decode("014036"), ["北海道", "後志総合振興局", "泊村"]);
   t.assertEquals(LGCode.decode("016969"), ["北海道", "根室振興局", "泊村"]); // 法律上のみ存在する村 https://ja.wikipedia.org/wiki/%E6%B3%8A%E6%9D%91_(%E5%8C%97%E6%B5%B7%E9%81%93%E6%A0%B9%E5%AE%A4%E6%8C%AF%E8%88%88%E5%B1%80)
+});
+
+Deno.test("decodeByPrefCity", () => {
+  t.assertEquals(LGCode.decodeByPrefCity("014036"), ["北海道", "泊村"]);
+  t.assertEquals(LGCode.decodeByPrefCity("182079"), ["福井県", "鯖江市"]);
+  t.assertEquals(LGCode.decodeByPrefCity("473561"), ["沖縄県", "渡名喜村"]);
+  t.assertEquals(LGCode.decodeByPrefCity("131032"), ["東京都", "港区"]);
+  t.assertEquals(LGCode.decodeByPrefCity(""), null);
+  t.assertEquals(LGCode.decodeByPrefCity("130001"), ["東京都", ""]);
 });
