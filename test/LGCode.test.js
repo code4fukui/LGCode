@@ -1,7 +1,7 @@
 import * as t from "https://deno.land/std/testing/asserts.ts";
 import { LGCode } from "../LGCode.js";
 
-Deno.test("decode", () => {
+Deno.test("encode", () => {
   t.assertEquals(LGCode.encode("沖縄県", "島尻郡", "渡名喜村"), "473561");
   t.assertEquals(LGCode.encode("沖縄県", "島尻郡渡名喜村"), "473561");
   t.assertEquals(LGCode.encode("沖縄県", "渡名喜村"), "473561");
@@ -14,7 +14,7 @@ Deno.test("decode", () => {
   t.assertEquals(LGCode.encode("福井県"), "180009");
   t.assertEquals(LGCode.encode("東京都"), "130001");
 });
-Deno.test("encode", () => {
+Deno.test("decode", () => {
   t.assertEquals(LGCode.decode("473561"), ["沖縄県", "島尻郡", "渡名喜村"]);
   t.assertEquals(LGCode.decode("182079"), ["福井県", "鯖江市"]);
   t.assertEquals(LGCode.decode("184811"), ["福井県", "大飯郡", "高浜町"]);
@@ -55,6 +55,17 @@ Deno.test("getCities", () => {
   t.assertEquals(LGCode.getCities("福井県")[0], "福井市");
   t.assertEquals(LGCode.getCities("東京都").length, 57);
   t.assertEquals(LGCode.getCities("東京都")[0], "千代田区");
+});
+Deno.test("getWards", () => {
+  t.assertEquals(LGCode.getWards("埼玉県", "さいたま市"), [
+    "西区",  "北区",  "大宮区",
+    "見沼区", "中央区", "桜区",
+    "浦和区", "南区",  "緑区",
+    "岩槻区"
+  ]);
+  t.assertEquals(LGCode.encode("埼玉県", "さいたま市", "西区"), "111015");
+  t.assertEquals(LGCode.encode("埼玉県", "さいたま市", "北区"), "111023");
+  t.assertEquals(LGCode.getWards("福井県", "福井市"), []);
 });
 Deno.test("泊村問題", () => {
   // [ "014036", "016969" ]

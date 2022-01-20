@@ -183,44 +183,6 @@ const getPrefs = () => {
   return prefs;
 };
 
-if (import.meta.main) {
-  //lgrevmap = makeReverseMap(LG_CODE);
-  //console.log(lgrevmap);
-  //console.log(LG_CODE.filter(l => l[1] == 0))
-  //console.log(LG_CODE["0"]);
-  console.log(getCityParent("全国"));
-  console.log(getLGCode("鯖江市"));
-  console.log(getLGCode("全国"));
-  /*
-  console.log(getLGCode("池田町"));
-  console.log(getLGCode("福井県"));
-  console.log(getLGCode("西区"));
-  // console.log(getLGCode("札幌市", "西区"));
-  
-  console.log(getLGCode("北海道", "札幌市", "西区"));
-  console.log(getLGCode("北海道", "西区"));
-  console.log(getLGCode("北海道", "西区"));
-    */
-  console.log(getCityChildren(0));
-  console.log(getCityChildren(18000));
-  console.log(getCityChildren(18400));
-  console.log(getCityChildren("広島市"));
-  console.log(getCityChildren("広島県"));
-  console.log(getCityChildren(34360));
-  // console.log(getLGCode("札幌市")); // 1100, 1000
-}
-
-/*
-export {
-  getLGCode,
-  fromLGCode,
-  getCityChildren,
-  getCityChildrenWithDistrict,
-  getCityParent,
-  searchCities,
-};
-*/
-
 const addCheckDigit = (code) => {
   if (!code) {
     return null;
@@ -310,6 +272,13 @@ class LGCode {
       return ArrayUtil.toUnique(res);
     }
     return res;
+  }
+  static getWards(pref, city) {
+    const code = removeCheckDigit(this.encode(pref, city));
+    const res = getCityChildren(code);
+    const wards = res.map(d => d[1]);
+    console.log(wards);
+    return wards;
   }
 }
 
