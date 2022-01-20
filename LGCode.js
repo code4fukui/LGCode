@@ -277,7 +277,6 @@ class LGCode {
     const code = removeCheckDigit(this.encode(pref, city));
     const res = getCityChildren(code);
     const wards = res.map(d => d[1]);
-    console.log(wards);
     return wards;
   }
 }
