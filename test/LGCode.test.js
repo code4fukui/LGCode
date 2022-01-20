@@ -65,6 +65,8 @@ Deno.test("getWards", () => {
   ]);
   t.assertEquals(LGCode.encode("埼玉県", "さいたま市", "西区"), "111015");
   t.assertEquals(LGCode.encode("埼玉県", "さいたま市", "北区"), "111023");
+  t.assertEquals(LGCode.encode("埼玉県さいたま市西区"), "111015");
+  t.assertEquals(LGCode.encode("埼玉県さいたま市北区"), "111023");
   t.assertEquals(LGCode.getWards("福井県", "福井市"), []);
 });
 Deno.test("泊村問題", () => {
