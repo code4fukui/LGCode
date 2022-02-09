@@ -240,7 +240,7 @@ class LGCode {
   static decode(code) {
     return fromLGCode(removeCheckDigit(code));
   }
-  static decodeByPrefCity(code) {
+  static decodeByPrefCity(code, hasward) {
     const names = fromLGCode(removeCheckDigit(code));
     if (!names) {
       return null;
@@ -253,7 +253,7 @@ class LGCode {
     if (s.endsWith("振興局") || s.endsWith("郡") || s == "特別区部") {
       return [pref, names[2]];
     }
-    return [pref, names[1]];
+    return hasward ? [pref, names[1], names[2]] : [pref, names[1]];
   }
   static encode(s1, s2, s3) {
     return addCheckDigit(getLGCode(s1, s2, s3));
