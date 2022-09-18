@@ -14,6 +14,8 @@ console.log(LGCode.encode("北海道", "札幌市")); // "011002"
 
 console.log(LGCode.decode("131041")); // [ "東京都", "特別区部", "新宿区" ]
 console.log(LGCode.decode("182079")); // [ "福井県", "鯖江市" ]
+
+console.log(LGCode.normalize(18207)); // 5桁 → チェックデジット付き6桁 182079
 ```
 
 ## テスト
