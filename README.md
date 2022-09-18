@@ -5,8 +5,7 @@
 ## 使用例
 
 ```js
-import { LGCode } from "./LGCode.js";
-import { getLGCode, fromLGCode } from "https://code4sabae.github.io/lgcode/lgcode.mjs";
+import { LGCode } from "https://code4fukui.github.io/LGCode/LGCode.js";
 
 console.log(LGCode.encode("東京都", "新宿区")); // "131041"
 console.log(LGCode.encode("福井県", "鯖江市")); // "182079"
