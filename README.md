@@ -1,41 +1,40 @@
-# 地方公共団体コード ESモジュール
+# LGCode
 
-市区町村から地方公共団体コード(半角数字6文字)を返すESモジュール(80KB) LGCode.js
+An ES module (80KB) that returns the local government code (6-digit numeric code) from the municipality in Japan.
 
-## 使用例
+## Usage
 
 ```js
 import { LGCode } from "https://code4fukui.github.io/LGCode/LGCode.js";
 
-console.log(LGCode.encode("東京都", "新宿区")); // "131041"
-console.log(LGCode.encode("福井県", "鯖江市")); // "182079"
-console.log(LGCode.encode("北海道", "札幌市")); // "011002"
+console.log(LGCode.encode("Tokyo", "Shinjuku")); // "131041"
+console.log(LGCode.encode("Fukui", "Sabae")); // "182079"
+console.log(LGCode.encode("Hokkaido", "Sapporo")); // "011002"
 
-console.log(LGCode.decode("131041")); // [ "東京都", "特別区部", "新宿区" ]
-console.log(LGCode.decode("182079")); // [ "福井県", "鯖江市" ]
+console.log(LGCode.decode("131041")); // [ "Tokyo", "Special Ward", "Shinjuku" ]
+console.log(LGCode.decode("182079")); // [ "Fukui", "Sabae" ]
 
-console.log(LGCode.normalize(18207)); // 5桁 → チェックデジット付き6桁 182079
+console.log(LGCode.normalize(18207)); // Add check digit: 182079
 ```
 
-## テスト
+## Test
 
 ```
 $ deno test test/LGCode.test.js
 ```
 
-## データ生成
+## Data Generation
 
-統計LODからSPARQLでデータ取得し LG_CODE.js を生成する
+Fetch data from the Statistics Open Data portal (SPARQL) and generate the `LG_CODE.js` file.
 ```
 $ deno run -A tools/make.js
 ```
 
-## 出典
+## Data Source
 
-- [統計LOD](https://data.e-stat.go.jp/lodw/)
+- [Statistics Open Data portal](https://data.e-stat.go.jp/lodw/)
 
+## Related Articles
 
-## 関連記事
-
-- [政府データを使って住所から緯度経度へ、丁目レベルのジオコーディング！ 住所変換コンポーネント移植の準備](https://fukuno.jig.jp/2867)
-- [日本政府発のJavaScriptライブラリを勝手にweb標準化するプロジェクト、全角-半角統一コンポーネントのESモジュール/Deno対応版公開](https://fukuno.jig.jp/2865)
+- [Geocoding addresses down to the neighborhood level using government data! Preparing to migrate an address conversion component](https://fukuno.jig.jp/2867)
+- [A project to voluntarily web-standardize a JavaScript library from the Japanese government, publishing an ES module/Deno-compatible version of the full-width-half-width unification component](https://fukuno.jig.jp/2865)
