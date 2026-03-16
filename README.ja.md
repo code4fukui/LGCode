@@ -1,6 +1,6 @@
 # LGCode - 地方公共団体コードESモジュール
 
-市区町村から地方公共団体コード(半角数字6文字)を返すESモジュール(80KB) LGCode.js
+市区町村から6桁の地方公共団体コードを返すESモジュール (80KB) LGCode.js
 
 ## 機能
 
@@ -25,7 +25,7 @@ console.log(LGCode.normalize(18207)); // 5桁 → チェックデジット付き
 
 ## データ生成
 
-統計LODからSPARQLでデータ取得し LG_CODE.js を生成する
+統計LODからSPARQLでデータを取得し LG_CODE.js を生成する
 ```
 $ deno run -A tools/make.js
 ```
